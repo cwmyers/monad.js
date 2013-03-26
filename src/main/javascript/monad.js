@@ -1,3 +1,11 @@
+//     Monad.js 0.2
+
+//     (c) 2012-2013 Chris Myers
+//     Backbone may be freely distributed under the MIT license.
+//     For all details and documentation:
+//     http://cwmyers.github.com/monad.js
+
+
 (function (window) {
 
     var idFunction = function (value) {
@@ -11,10 +19,17 @@
     };
 
 
-
     /* Maybe Monad */
 
-    var Maybe = window.Maybe = {};
+    var Maybe = window.Maybe = {}
+
+    Maybe.fromNull = function (val) {
+        if (val == undefined || val == null) {
+            return Maybe.none()
+        } else {
+            return Maybe.some(val)
+        }
+    }
 
     var Some = Just = Maybe.Just = Maybe.just = Maybe.Some = Maybe.some = function (val) {
         return new Some.fn.init(val)
@@ -49,10 +64,10 @@
         },
         orJust:function (otherValue) {
             return this.orSome(otherValue)
-        }       ,
-        ap: function(maybeWithFunction) {
+        },
+        ap:function (maybeWithFunction) {
             var value = this.val
-            return maybeWithFunction.map(function(fn){
+            return maybeWithFunction.map(function (fn) {
                 return fn(value)
             })
         }
@@ -85,7 +100,7 @@
         just:illegalStateFunction,
         orSome:idFunction,
         orJust:idFunction,
-        ap: function(maybeWithFunction) {
+        ap:function (maybeWithFunction) {
             return this;
         }
     };
@@ -115,6 +130,12 @@
         },
         bind:function (fn) {
             return fn(this.val);
+        },
+        ap:function (validationWithFn) {
+            var value = this.val
+            return validationWithFn.map(function (fn) {
+                return fn(value);
+            })
         }
     };
 
@@ -141,6 +162,9 @@
         },
         success:function () {
             throw 'Illegal state. Cannot call success() on a Validation.fail'
+        },
+        ap: function(validationWithFunction) {
+            return this;
         }
     };
 
